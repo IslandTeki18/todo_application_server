@@ -7,7 +7,7 @@ CREATE TABLE todos (
     description VARCHAR(255) NOT NULL,
     assigned_to VARCHAR(100) NOT NULL,
     is_complete BOOLEAN NOT NULL,
-    created_on DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_on CURRENT_DATE NOT NULL DEFAULT CURRENT_DATE,
     completed_on DATE NOT NULL,
     PRIMARY KEY (todo_id)
 );

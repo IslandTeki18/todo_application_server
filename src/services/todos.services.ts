@@ -11,8 +11,8 @@ export const createTodo = async (req: Request, res: Response) => {
       return res.status(400).send({ message: "Values are missing." });
     }
     const { rows } = await pool.query(
-      "INSERT INTO todos(title, description, assigned_to, is_complete, created_on) VALUES ($1, $2, $3, $4, $5) RETURNING *;",
-      [title, description, assigned_to, false, Date.now()]
+      "INSERT INTO todos (title, description, assigned_to, is_complete) VALUES ($1, $2, $3, $4) RETURNING *;",
+      [title, description, assigned_to, false]
     );
     console.log(rows[0])
     if (!rows[0]) {
