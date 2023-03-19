@@ -29,6 +29,17 @@ export const createTodo = async (req: Request, res: Response) => {
 // DESC:    Get a Todo
 // ROUTE:   /todo/:id
 // AUTH:    PRIVATE
+export const getTodoById = async(req: Request, res: Response) => {
+  try {
+    const {rows} = await pool.query('SELECT * FROM todos WHERE todo_id = $1', [req.params.id])
+    if (!rows[0]) {
+      return res.status(404).send({message: "Todo not found."})
+    }
+    return res.status(200).send(rows[0])
+  } catch (error) {
+    return res.status(500).send({error: error.message})
+  }
+}
 
 // DESC:    Get All Todos
 // ROUTE:   /todos
