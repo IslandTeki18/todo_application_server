@@ -62,6 +62,34 @@ export const getAllTodos = async (req: Request, res: Response) => {
 // DESC:    Update a Todo
 // ROUTE:   /todo/:id/update
 // AUTH:    PRIVATE
+export const updateTodoById = async (req: Request, res: Response) => {
+  try {
+    const todo_id = req.params.id;
+    const { title, description, assigned_to, is_complete, completed_on } =
+      req.body;
+    const { rows } = await pool.query(
+      "SELECT * FROM todos WHERE todo_id = $1;",
+      [todo_id]
+    );
+    if (!rows[0]) {
+      return res.status(404).send({ message: "Todo not found." });
+    }
+    await pool.query(
+      "UPDATE todos SET title = $1, description = $2, assigned_to = $3, is_complete = $4, completed_on = $5 WHERE todo_id = $6;",
+      [
+        title ? title : rows[0].title,
+        description ? description : rows[0].description,
+        assigned_to ? assigned_to : rows[0].assigned_to,
+        is_complete ? is_complete : rows[0].is_complete,
+        completed_on ? completed_on : rows[0].completed_on,
+        todo_id,
+      ]
+    );
+    return res.status(200).json("Todo was updated!");
+  } catch (error) {
+    return res.status(500).send({ error: error.message });
+  }
+};
 
 // DESC:    Delete a Todoc
 // ROUTE:   /todo/:id/remove
