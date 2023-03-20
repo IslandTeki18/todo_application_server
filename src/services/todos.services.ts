@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import { pool } from "../database/database";
 
 // DESC:    Create a Todo
@@ -14,7 +14,7 @@ export const createTodo = async (req: Request, res: Response) => {
       "INSERT INTO todos (title, description, assigned_to, is_complete) VALUES ($1, $2, $3, $4) RETURNING *;",
       [title, description, assigned_to, false]
     );
-    console.log(rows[0])
+    console.log(rows[0]);
     if (!rows[0]) {
       return res
         .status(400)
@@ -29,26 +29,40 @@ export const createTodo = async (req: Request, res: Response) => {
 // DESC:    Get a Todo
 // ROUTE:   /todo/:id
 // AUTH:    PRIVATE
-export const getTodoById = async(req: Request, res: Response) => {
+export const getTodoById = async (req: Request, res: Response) => {
   try {
-    const {rows} = await pool.query('SELECT * FROM todos WHERE todo_id = $1', [req.params.id])
+    const { rows } = await pool.query(
+      "SELECT * FROM todos WHERE todo_id = $1",
+      [req.params.id]
+    );
     if (!rows[0]) {
-      return res.status(404).send({message: "Todo not found."})
+      return res.status(404).send({ message: "Todo not found." });
     }
-    return res.status(200).send(rows[0])
+    return res.status(200).send(rows[0]);
   } catch (error) {
-    return res.status(500).send({error: error.message})
+    return res.status(500).send({ error: error.message });
   }
-}
+};
 
 // DESC:    Get All Todos
 // ROUTE:   /todos
 // AUTH:    PRIVATE
+export const getAllTodos = async (req: Request, res: Response) => {
+  try {
+    const { rows } = await pool.query("SELECT * FROM todos;");
+    if (!rows.length)
+      return res.status(404).send({ message: "There are no todos." });
+
+    return res.status(200).send(rows);
+  } catch (error) {
+    return res.status(500).send({ error: error.message }).end();
+  }
+};
 
 // DESC:    Update a Todo
 // ROUTE:   /todo/:id/update
 // AUTH:    PRIVATE
 
-// DESC:    Delete a Todo
+// DESC:    Delete a Todoc
 // ROUTE:   /todo/:id/remove
 // AUTH:    PRIVATE
